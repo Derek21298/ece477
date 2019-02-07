@@ -4,15 +4,17 @@
 
 
 # Input files ============================================
-TARGET = helloWorldLoop
-SRC = hello_world_loop.c
+TARGET1 = helloWorldLoop
+TARGET2 = somethingCool
+SRC1 = hello_world_loop
+SRC2 = something_cool
 OBJS = 
 # ========================================================
 
-ALLOBJS := $(SRC:.c=.o) $(OBJS)
-
-all: $(ALLOBJS)
-	gcc -o $(TARGET) $(ALLOBJS)
+all: $(SRC1).o $(SRC2).o
+	gcc -o $(TARGET1) $(SRC1).o
+	gcc -o $(TARGET2) $(SRC2).o
 
 clean:
-	rm -f $(SRC:.c=.o) $(TARGET)
+	rm -f $(SRC1).o $(TARGET1)
+	rm -f $(SRC2).o $(TARGET2)

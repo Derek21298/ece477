@@ -16,14 +16,14 @@ int main() {
 
 	// Prints "Hello World" the amount of times that is the size of an int in bytes
 	printf("Print \"Hello World\" the number of times corresponding to the size of an int in bytes.\n");
-	printf("Printing \"Hello World\" %d amount of times\n", size_int);
+	printf("Printing \"Hello World\" %d times!\n", size_int);
 	printColorizedHelloWorld(size_int);
 
 	printf("\n");
 
 	// Prints "Hello World" the amount of times that is the size of a long in bytes
 	printf("Print \"Hello World\" the number of times corresponding to the size of a long in bytes.\n");
-	printf("Printing \"Hello World\" %d amount of times\n", size_long);
+	printf("Printing \"Hello World\" %d times!\n", size_long);
 	printColorizedHelloWorld(size_long);
 }
 
