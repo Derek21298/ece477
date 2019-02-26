@@ -2,9 +2,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+#define PRESSED 1
+#define RELEASED 0
+
 int main(int argc, char** argv) {
 
 	int i;
+
+	if(argc < 2) {
+		printf("Invalid Use Of Program!\n");
+		return 0;
+	}
+
+	int time_delay = atoi(argv[1]);
 
 	wiringPiSetup();
 
@@ -16,6 +27,13 @@ int main(int argc, char** argv) {
 	pinMode(5, OUTPUT);
 	pinMode(6, OUTPUT);
 	pinMode(7, OUTPUT);
+
+	pinMode(15, INPUT);
+	pinMode(16, INPUT);
+
+	pullUpDnControl(15, PUD_UP);
+	pullUpDnControl(16, PUD_UP);
+
 
 	// Turn all LEDs off
 	for(i = 0; i < 8; i++) {
@@ -32,7 +50,7 @@ int main(int argc, char** argv) {
 				continue;
 			}
 	
-			delay(200);
+			delay(time_delay);
 
 			digitalWrite(i-1, LOW);
 			digitalWrite(i, HIGH);
@@ -46,7 +64,7 @@ int main(int argc, char** argv) {
 				continue;
 			}
 	
-			delay(200);
+			delay(time_delay);
 
 			digitalWrite(i+1, LOW);
 			digitalWrite(i, HIGH);
