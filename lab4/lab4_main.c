@@ -1,3 +1,29 @@
+/*
+ *   ECE 477 Lab 4
+ *   Authors: Alex Barnett, Derek Haas, Dustin Knight
+ *   Date: 3/1/2019	
+ */
+
+/*
+ *   File: lab4_main.c
+ *   Functions:
+ *		set_up_pins
+ *		button_check
+ */
+
+/*	
+ *   Function Descriptions:
+ *
+ *   	set_up_pins
+ *   	   Initializes GPIO pins 25,27, and 28 as inputs and pull-down
+ *
+ *	button_check
+ *	   
+ *
+ *
+ */ 
+
+
 #include <wiringPi.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,7 +36,7 @@
 void set_up_pins(void);
 struct button_properties button_check(int button_a, int button_b, int button_c, struct button_properties);
 
-// Holding the properties of button in struct to avoid global variable
+/* Holding the properties of button in struct to avoid global variable */
 struct button_properties {
 	int time_delay;
 	int direction;
@@ -19,39 +45,59 @@ struct button_properties {
 
 int main(int argc, char** argv) {
 
+	/* Initialize Variables */
 	int button_a, button_b, button_c;
 	struct button_properties s;
-	s.time_delay = 1024;
-	s.direction = 1;
+	s.time_delay = 1024;	   // Delay is initially 1024 ms
+	s.direction = 1;	   // Direction is initially from GPIO0 to GPIO7
 	
+
+	/* Initialize GPIO pins 0 through 7 as output */
 	set_up_pins();
 
+	/* Close lab4_rotate if open and start rotating LEDs */
+	 /********IS THIS RIGHT***********/
 	system("pkill lab4_rotate");
-	system("./lab4_rotate 1024&");
+	system("./lab4_rotate 1024 1&");
+	
 
+	/* Begin infinite loop to check */
 	while(1){
 
-		button_a = digitalRead(25);
-		button_b = digitalRead(27);
-		button_c = digitalRead(28);		
+		/* Button a decrements time_delay */
+		button_a = digitalRead(25);	   // GPIO25
 
+		/* Button b increments time_delay */
+		button_b = digitalRead(27); 	   // GPIO27
+
+		/* Button c resets program */
+		button_c = digitalRead(28); 	   // GPIO28		
+
+		/* Print value of buttons (1 or 0) */
 		printf("BUTTON A VALUE: %d\n", button_a);	
 		printf("BUTTON B VALUE: %d\n", button_b);	
-		
+		printf("BUTTON C VALUE: %d\n", button_c);
+
+		/* Check buttons and save time_delay and direction to struct s */
 		s = button_check(button_a, button_b, button_c, s);
-		
 	}
 
 }
 
 void set_up_pins(void) {
 
+	/* Initialize Wiring Pi */
 	wiringPiSetup();
+
+	/* Initialize GPIO pins as input */
 	pinMode(25, INPUT);
 	pinMode(27, INPUT);
+	pinMode(28, INPUT);
 
+	/* Initializes GPIO pins as pull-down */
 	pullUpDnControl(25, PUD_DOWN);
 	pullUpDnControl(27, PUD_DOWN);
+	pullUpDnControl(28, PUD_DOWN);
 }
 
 struct button_properties button_check(int button_a, int button_b, int button_c, struct button_properties s) {
