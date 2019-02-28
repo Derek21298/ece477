@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 	s.direction = 1;	   // Direction is initially from GPIO0 to GPIO7
 	
 
-	/* Initialize GPIO pins 0 through 7 as output */
+	/* Initialize GPIO pins 25, 27, and 28 as pull-down input */
 	set_up_pins();
 
 	/* Close lab4_rotate if open and start rotating LEDs */
