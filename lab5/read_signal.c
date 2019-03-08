@@ -18,8 +18,13 @@ int main(void) {
 	double period;
 	double frequency;
 	unsigned int time1, time2;
+	int count;
+	int led_position = 1;
 	
 	set_up_input();
+
+	// Turn the first LED on
+	digitalWrite(0, HIGH);
 
 	while(1) {
 
@@ -27,7 +32,31 @@ int main(void) {
 	
 		if(input == HIGH){
 			time1 = micros();
-			
+			count++;
+			// If 5 periods have passed
+			if((count % 5) == 0) {
+				// rotate LED to next position
+				// Position 0 case
+				if(led_position == 0){
+				
+					digitalWrite(0,HIGH);
+					digitalWrite(7, LOW);
+					led_position++;
+				}
+				// Position 1-7 case
+				else {
+
+					digitalWrite(led_position,HIGH);
+					digitalWrite(led_position - 1, LOW);
+					led_position++;
+				
+					// Dont let led_position be above 8	
+					if(led_position == 8) {
+						led_position = 0;
+					}
+				}		
+			}
+	
 			while(input == HIGH) {
 				input = digitalRead(25);
 			}
@@ -61,13 +90,21 @@ int main(void) {
 
 void set_up_input(void) {
 
+	int i;
+
 	// Initialize Wiring Pi
 	wiringPiSetup();
+
+	for(i = 0; i < 8; i++) {
+		pinMode(i,OUTPUT);
+		digitalWrite(i,LOW);
+	}
+
 
 	// Initialize GPIO 25 as an input
 	pinMode(25, INPUT);
 
 	// Set the pull down resistor on GPIO 25
 	pullUpDnControl(25, PUD_DOWN);
-
+	
 }

@@ -13,4 +13,4 @@ terminal:
 	sudo avrdude -C ~/avrdude_gpio.conf -c pi_1 -p atmega88pa -t
 
 clean: 
-	rm -rf a.hex a.out
+	rm -rf a.hex a.out read_signal
