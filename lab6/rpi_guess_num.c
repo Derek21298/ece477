@@ -11,65 +11,93 @@ int init(void);
 
 int main() { 
 	
-	int fd1;
-   	char buf[1000];
-   	setup_stdin();
-   	fd1=init();
+	int file;
+   	setup_stdin();  // Initialize stdin for serial
+   	file=init();	// Initialize the serial port
 
-	//todo make sure fd1 is ok
+	// Error Check
+	if(file < 0){
+		printf("ERROR INITIALIZING SERIAL PORT!\n");
+		return 0;
+	}
+
+	// Fork the from_to function
+	// This makes it so that we can read from the serial and also write at the same time
    	if(fork()){ 
-		from_to(fd1,1);
+		from_to(file,1);
 	}	
    	else{
-		from_to(0,fd1);
+		from_to(0,file);
 	}
-   	//todo sure would be nice to have an exit condition
+
      	return 1;
 
 }
 
+// Initialize stdin for serial
 void setup_stdin(void) { 
-	
-	struct termios tc;
-   	tcgetattr(0, &tc);
-   	tc.c_lflag &=~ICANON ;
-   	tc.c_lflag &=~ECHO;
-	tc.c_cc[VMIN]=0;
-	tc.c_cc[VTIME]=0;
-   	tcsetattr(0, TCSANOW, &tc);
 
+	// Create a struck termios	
+	struct termios tc;
+
+	// Get the attributes of the struct
+   	tcgetattr(0, &tc);
+
+	// Set the appropriate flags
+   	tc.c_lflag &=~ICANON;	// Disable canonical
+   	tc.c_lflag |=ECHO;	// Enable ECHO
+	tc.c_cc[VMIN]=0;	// These were useful tips given by Professor Bruce Segee
+	tc.c_cc[VTIME]=0;
+	
+	// Set the attributes of the struct
+   	tcsetattr(0, TCSANOW, &tc);
 }
 
-
+// Function to read data from a file and write to another
 void from_to(int f1, int f2) {  
 	
 	char c;
+	
+	// Infinite loop
    	while(1) {
+		// If the file reads a character
 		if(read(f1,&c,1)) {
+			// Write to the other file that character
 			 write(f2,&c,1);
 		}
 	}  
 }
 
+// Initialize serial communication
 int  init() {
    
- 	int fd1;
- 	struct termios tc;                // terminal control structure
+ 	int file;
+ 	struct termios tc;	// Create a struct termios
 
-   	//todo serial port should not be hard coded
-    	fd1 = open("/dev/ttyS0", O_RDWR|O_NOCTTY);  // really ought to check for error
-    	tcgetattr(fd1, &tc);
+	// Open the serial port ttyS0 to read and write 
+    	file = open("/dev/ttyS0", O_RDWR|O_NOCTTY);
+
+	if(file < 0){
+		printf("Error opening serial port ttyS0\n");
+		return -1;
+	}
+
+	// Get the attributes of the struct
+    	tcgetattr(file, &tc);
+	
+	// Set the appropriate flags
     	tc.c_iflag = IGNPAR;
     	tc.c_oflag = 0;
-    	tc.c_cflag = CS8 | CREAD | CLOCAL; //8 bit chars enable receiver no modem status lines
+    	tc.c_cflag = CS8 | CREAD | CLOCAL; // 8 bit chars enable receiver no modem status lines
     	tc.c_lflag =0 ;
 
-    	//todo baud rate should not be hard coded
+    	// Setting baud rate to 1200
     	cfsetispeed(&tc, B1200);
     	cfsetospeed(&tc, B1200);
 
-    	//todo should have bits per character set
-    	tcsetattr(fd1, TCSANOW, &tc);
-  	return fd1;
+    	// Set the attributes for the struct
+    	tcsetattr(file, TCSANOW, &tc);
+
+  	return file;
 }
 
