@@ -146,9 +146,8 @@ void do_high_low(void) {
 int serial_putchar(char val, FILE * fp) {
 
 	// Wait until empty, then write value
-  	while((UCSR0A&(1<<UDRE0)) == 0){
-   		UDR0 = val;
-	}
+  	while((UCSR0A&(1<<UDRE0)) == 0);
+   	UDR0 = val;
    	return 0;
 }
 
