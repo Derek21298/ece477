@@ -19,6 +19,7 @@ void do_high_low(void);
 int read_integer(void);
 int read_ADC(void);
 void init_ADC(void);
+void part_b(void);
 
 int main(void) { 
 
@@ -29,7 +30,6 @@ int main(void) {
   	_delay_ms(2000);
   
   	FILE *fp, *fpr;
-  	int guess,x;
   	fp=stdout;
 	fpr=stdin;
 	int input, ADC_output;
@@ -43,27 +43,11 @@ int main(void) {
 	
 	while(1) {
 
+		// Reset the ADC output just incase...
 		ADC_output = 0;
 	
-		// Receive a valid input
-		while(1) {
+		input = read_integer();
 
-			fprintf(fp, "Please enter an integer between 0 and 255: ");
-			input = read_integer();
-			fprintf(fp, "\n");
-		
-			fprintf(fp,"Input is: %d\n",input);
-	
-			if(input > 255) {
-				fprintf(fp, "Entered value greater than 255!\n" );
-			}
-			else if(input < 0) {
-				fprintf(fp, "Entered value less than 0!\n" );	
-			}
-			else {
-				break;
-			}
-		}	
 
 		// Tell the user if LEDs are turning on or off
 		if(input > 0) {
@@ -84,6 +68,13 @@ int main(void) {
 		vref = (1.1 * 1024.0) / (float)ADC_output;
 
 		fprintf(fp, "Power Supply: %f\n", vref);
+
+		if(ADC_output < 330) {
+	
+			printf("ERROR POWER SUPPLY VOLATGE TOO HIGH!\n");
+
+			part_b();
+		}
 		
 	}
 
@@ -155,50 +146,32 @@ int read_integer(void) {
 	fp = stdout;
 	fpr = stdin;
 
-	while(fscanf(fpr, "%d", &input) != 1) {
-			fscanf(fpr, "%*s");
-	}		
+	
+	// Receive a valid input
+	while(1) {
+
+		fprintf(fp, "Please enter an integer between 0 and 255: ");
+		
+		while(fscanf(fpr, "%d", &input) != 1) {
+				fscanf(fpr, "%*s");
+		}			
+
+		fprintf(fp,"\nInput is: %d\n",input);
+
+		if(input > 255) {
+			fprintf(fp, "Entered value greater than 255!\n" );
+		}
+		else if(input < 0) {
+			fprintf(fp, "Entered value less than 0!\n" );	
+		}
+		else {
+			return input;
+		}
+	}	
+
+
 
 	return input;
-}
-
-void do_high_low(void) {
-   	FILE *fp, *fpr;
-   	int answer, guess;
- 
-	// Create a random answer from 0 to 10000
-   	answer=rand()%10000;
- 
-  	fp=stdout;
-   	fpr=stdin;
- 
-	// /r is a carriage return or "new line" for the AVR
- 	fprintf(fp,"Welcome to the high-low guessing game!\r\n");
-  	fprintf(fp,"Please enter integer guesses between 0 and 10000: \r\n");
- 
-	// Initialize guess to be different than answer
-  	guess=answer+1;
- 
-  	while(guess!=answer){
-
-		// Hold program until a guess is written to stdin
-	   	while(fscanf(fpr,"%d",&guess)!=1){
-			// Ignore any strings
-			fscanf(fpr,"%*s");
-	 	}
-	
-		// Check if answer is guess
-		if(guess<answer){
-			 fprintf(fp,"Too low, try again\r\n");
-	    	}
-
-		else if (guess>answer){
-			 fprintf(fp,"Too High, try again\r\n");
-		}
-		else{
-			 fprintf(fp,"Congratulations! You got it right!\r\n");
-		}
-  	}
 }
 
 // Open the stream to write
@@ -217,4 +190,21 @@ int serial_getchar(FILE * fp) {
    	return UDR0;
 }     
 
+void part_b(void) {
+
+	int i,j;
+	int mask = 0x01;
+
+	for(i = 0; i < 10; i++) {
+
+		PORTB = 0;
+	
+		for(j = 0; j < 8; j++) {
+
+			_delay_ms(100);
+			PORTB = mask << j;
+					
+		}
+	}
+}
 
