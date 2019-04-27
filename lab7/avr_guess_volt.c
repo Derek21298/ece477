@@ -46,6 +46,7 @@ int main(void) {
 		// Reset the ADC output just incase...
 		ADC_output = 0;
 	
+		// Read Input
 		input = read_integer();
 
 
@@ -69,6 +70,7 @@ int main(void) {
 
 		fprintf(fp, "Power Supply: %f\n", vref);
 
+		// Determine is voltage is too high
 		if(ADC_output < 330) {
 	
 			printf("ERROR POWER SUPPLY VOLATGE TOO HIGH!\n");
@@ -190,11 +192,13 @@ int serial_getchar(FILE * fp) {
    	return UDR0;
 }     
 
+// Part b code
 void part_b(void) {
 
 	int i,j;
 	int mask = 0x01;
 
+	// Rotate through the LEDs
 	for(i = 0; i < 10; i++) {
 
 		PORTB = 0;
